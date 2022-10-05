@@ -6,6 +6,7 @@
 #include "GameFramework/Pawn.h"
 #include "BasePawn.generated.h"
 
+
 UCLASS()
 class TOONTANKS_API ABasePawn : public APawn
 {
@@ -15,15 +16,12 @@ public:
 	// Sets default values for this pawn's properties
 	ABasePawn();
 
+	void HandleDestruction();
+
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	void RotateTurret(FVector LookAtTarget);
+	void Fire();
 
-public:
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-	
 private:
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category= "Components",meta= (AllowPrivateAccess="true"))
 	class UCapsuleComponent* CapsuleComp;
@@ -37,5 +35,9 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 		USceneComponent* ProjectileSpawnPoint;
 
+	UPROPERTY(EditAnywhere,Category= "Combat")
+	TSubclassOf<class AProjectile> ProjectileClass;
+
+	
 
 };

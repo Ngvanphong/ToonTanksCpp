@@ -33,6 +33,8 @@ void ATank::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 	PlayerInputComponent->BindAxis(TEXT("Turn"), this, &ATank::Turn);
 
+	PlayerInputComponent->BindAction(TEXT("Fire"), IE_Pressed, this, &ATank::Fire);
+
 }
 
 void ATank::Turn(float value) {
@@ -40,4 +42,35 @@ void ATank::Turn(float value) {
 	DeltaRotation.Yaw = value * UGameplayStatics::GetWorldDeltaSeconds(this) * TurnRate;
 	AddActorLocalRotation(DeltaRotation, true);
 
+}
+
+// Called every frame
+void ATank::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	if (TankPlayerController) {
+		FHitResult HitResult;
+		TankPlayerController->GetHitResultUnderCursor(ECC_Visibility, false, HitResult);
+		RotateTurret(HitResult.ImpactPoint);
+	}
+
+}
+
+// Called when the game starts or when spawned
+void ATank::BeginPlay()
+{
+	Super::BeginPlay();
+	TankPlayerController =Cast<APlayerController>(GetController());
+
+
+}
+
+void ATank::HandleDestruction() {
+	Super::HandleDestruction();
+	SetActorHiddenInGame(true);
+	SetActorTickEnabled(false);
+}
+
+APlayerController* ATank::GetTankPlayerController() const {
+	return TankPlayerController;
 }
